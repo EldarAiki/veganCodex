@@ -2,6 +2,7 @@ const asyncHandler = require('express-async-handler');
 const Product =require('../models/Product.js');
 const redisClient = require('../config/redis'); 
 const { deleteFromCloudinary } = require('../utils/upload');
+const { validationResult } = require('express-validator');
 
 // @desc    Search products by location
 // @route   GET /api/products
@@ -79,6 +80,11 @@ const addProduct = asyncHandler(async (req, res) => {
   const { name, category, country, description } = req.body;
   const imageUrls = req.files?.map(file => file.path) || [];
 
+  const errors = validationResult(req);
+  if (!errors.isEmpty()) {
+    return res.status(400).json({ errors: errors.array() });
+  }
+
   const product = await Product.create({
     name,
     category,
@@ -99,6 +105,12 @@ const addProduct = asyncHandler(async (req, res) => {
 // @route   POST /api/products/:id/comments
 // @access  Private
 const addComment = asyncHandler(async (req, res) => {
+  
+  const errors = validationResult(req);
+  if (!errors.isEmpty()) {
+    return res.status(400).json({ errors: errors.array() });
+  }
+  
   const { text } = req.body;
   
   const product = await Product.findById(req.params.id);
@@ -132,6 +144,11 @@ const addComment = asyncHandler(async (req, res) => {
 const updateProduct = asyncHandler(async (req, res) => {
   const product = await Product.findById(req.params.id);
   
+  const errors = validationResult(req);
+  if (!errors.isEmpty()) {
+    return res.status(400).json({ errors: errors.array() });
+  }
+
   if (!product) {
     res.status(404);
     throw new Error('Product not found');

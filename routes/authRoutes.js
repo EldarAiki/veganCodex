@@ -7,9 +7,10 @@ const {
   logoutUser
 } = require('../controllers/authController.js');
 const { protect } = require('../middleware/authMiddleware.js');
+const { registerValidation, loginValidation } = require('../middleware/validators/authValidator');
 
-router.post('/register', registerUser);
-router.post('/login', loginUser);
+router.post('/register', registerValidation, registerUser);
+router.post('/login', loginValidation, loginUser);
 router.post('/logout', logoutUser);
 router.get('/profile', protect, getProfile);
 

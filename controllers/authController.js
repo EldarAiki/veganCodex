@@ -1,12 +1,18 @@
 const asyncHandler = require('express-async-handler');
 const generateToken = require('../utils/generateToken.js');
 const User = require('../models/User.js');
+const { validationResult } = require('express-validator');
 
 // @desc    Register user
 // @route   POST /api/auth/register
 // @access  Public
 const registerUser = asyncHandler(async (req, res) => {
   const { username, email, password } = req.body;
+
+  const errors = validationResult(req);
+  if (!errors.isEmpty()) {
+    return res.status(400).json({ errors: errors.array() });
+  }
 
   const userExists = await User.findOne({ email });
   if (userExists) {
@@ -33,6 +39,11 @@ const registerUser = asyncHandler(async (req, res) => {
 // @access  Public
 const loginUser = asyncHandler(async (req, res) => {
   const { email, password } = req.body;
+
+  const errors = validationResult(req);
+  if (!errors.isEmpty()) {
+    return res.status(400).json({ errors: errors.array() });
+  }
 
   const user = await User.findOne({ email });
   if (user && (await user.matchPassword(password))) {
