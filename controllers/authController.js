@@ -25,7 +25,7 @@ const registerUser = asyncHandler(async (req, res) => {
     email,
     password
   });
-
+  
   res.status(201).json({
     _id: user._id,
     username: user.username,

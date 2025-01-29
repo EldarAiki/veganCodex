@@ -1,4 +1,14 @@
+const ErrorResponse = require('../utils/errorResponse');
+
 const errorHandler = (err, req, res, next) => {
+
+  if (err instanceof ErrorResponse && err.statusCode === 403) {
+    return res.status(403).json({
+      success: false,
+      error: 'Forbidden by CORS policy'
+    });
+  }
+
   const statusCode = res.statusCode === 200 ? 500 : res.statusCode;
   
   // Handle validation errors

@@ -5,8 +5,10 @@ const morgan = require('morgan');
 const cors = require('cors');
 const connectDB = require('./config/db');
 const { errorHandler } = require('./middleware/errorMiddleware');
-const { globalLimiter, authLimiter } = require('./middleware/rateLimiter');
+const { globalLimiter, authLimiter } = require('./middleware/validators/rateLimiter');
+const { corsOptions } = require('./middleware/corsMiddleware')
 const helmet = require('helmet');
+const xssResponseSanitizer = require('./middleware/sanitizeResponse');
 
 // Initialize Express
 const app = express();
@@ -20,17 +22,24 @@ app.use(
   helmet.contentSecurityPolicy({
     directives: {
       defaultSrc: ["'self'"],
-      scriptSrc: ["'self'", "trusted-cdn.com"],
+      scriptSrc: [
+        "'self'", 
+        "'unsafe-inline'", // Remove this in production
+        "trusted-scripts.com"
+      ],
+      styleSrc: ["'self'", "'unsafe-inline'"], // Tighten later
       imgSrc: ["'self'", "data:", "https://res.cloudinary.com"],
-      styleSrc: ["'self'", "'unsafe-inline'"], // Only if using inline styles
-      fontSrc: ["'self'", "https://fonts.gstatic.com"]
+      fontSrc: ["'self'", "https://fonts.gstatic.com"],
+      objectSrc: ["'none'"], // Disallow plugins (Flash, etc.)
+      upgradeInsecureRequests: [] // Force HTTPS
     }
   })
 );
 // Middleware
-app.use(cors());
+app.use(cors(corsOptions));
 app.use(express.json());
 app.use(morgan('dev'));
+app.use(xssResponseSanitizer);
 app.use(globalLimiter);
 app.use('/api/auth', authLimiter);
 // Error Handling Middleware

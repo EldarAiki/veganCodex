@@ -1,4 +1,11 @@
 const { body, param } = require('express-validator');
+const DOMPurify = require('dompurify');
+const { JSDOM } = require('jsdom');
+
+const window = new JSDOM('').window;
+const dompurify = DOMPurify(window);
+
+const sanitizeInput = (value) => dompurify.sanitize(value).trim();
 
 const productValidation = [
   body('name')
@@ -21,6 +28,7 @@ const productValidation = [
   
   body('description')
     .optional()
+    .customSanitizer(sanitizeInput)
     .trim()
     .isLength({ max: 1000 }).withMessage('Description too long (max 1000 chars)')
     .escape()
@@ -30,6 +38,7 @@ const commentValidation = [
   body('text')
     .trim()
     .notEmpty().withMessage('Comment text is required')
+    .customSanitizer(sanitizeInput)
     .isLength({ max: 500 }).withMessage('Comment must be less than 500 characters')
     .escape()
 ];
