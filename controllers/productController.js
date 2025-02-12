@@ -85,6 +85,11 @@ const addProduct = asyncHandler(async (req, res) => {
     return res.status(400).json({ errors: errors.array() });
   }
 
+  const existingProduct = await Product.findOne({ name });
+  if (existingProduct) {
+    return res.status(409).json({ message: 'Product with this name already exists' });
+  }
+
   const product = await Product.create({
     name,
     category,
@@ -262,5 +267,40 @@ const deleteComment = asyncHandler(async (req, res) => {
   });
 });
 
-module.exports = { searchProducts, getProductById,
-   addProduct, addComment, updateProduct, deleteProduct, updateComment, deleteComment };
+const reportComment = asyncHandler(async (req, res) => {
+  const product = await Product.findById(req.params.productId);
+  const comment = product.comments.id(req.params.commentId);
+
+  if (!comment) {
+    res.status(404);
+    throw new Error('Comment not found');
+  }
+
+  // Prevent duplicate reports
+  const existingReport = comment.reports.find(
+    report => report.user.toString() === req.user._id.toString()
+  );
+
+  if (existingReport) {
+    res.status(400);
+    throw new Error('You already reported this comment');
+  }
+
+  comment.reports.push({
+    user: req.user._id,
+    reason: req.body.reason
+  });
+
+  comment.reportCount = comment.reports.length;
+  await product.save();
+
+  res.status(200).json({
+    success: true,
+    reportCount: comment.reportCount
+  });
+});
+
+module.exports = { 
+  searchProducts, getProductById,
+  addProduct, addComment, updateProduct,
+  deleteProduct, updateComment, deleteComment, reportComment };

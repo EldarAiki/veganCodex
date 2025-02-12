@@ -16,6 +16,17 @@ const userSchema = new mongoose.Schema({
     type: String,
     required: true
   },
+  role: {
+    type: String,
+    enum: ['user', 'admin', 'moderator'],
+    default: 'user'
+  },
+  isVerified: {
+    type: Boolean,
+    default: false
+  },
+  emailVerificationToken: String,
+  emailVerificationExpire: Date,
   createdAt: {
     type: Date,
     default: Date.now
@@ -30,6 +41,16 @@ userSchema.pre('save', async function (next) {
   this.password = await bcrypt.hash(this.password, salt);
   next();
 });
+
+// userSchema.pre('save', function(next) {
+//   if (this.isModified('role') && !this.isNew) {
+//     if (!this.$isAdmin) {
+//       throw new Error('Only admins can change roles');
+//     }
+//   }
+//   next();
+// });
+
 userSchema.methods.matchPassword = async function (enteredPassword) {
   return await bcrypt.compare(enteredPassword, this.password);
 };
