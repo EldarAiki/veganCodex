@@ -1,7 +1,7 @@
 
-// TODO - edit production domain list
-
 const ErrorResponse = require('../utils/errorResponse');
+
+// TODO - edit production domain list
 
 const allowedOrigins = [
   process.env.NODE_ENV === 'development' && 'http://localhost:3000', // React web dev

@@ -13,6 +13,7 @@ const {
 } = require('../controllers/productController.js');
 const { protect, admin } = require('../middleware/authMiddleware.js');
 const cache = require('../middleware/cache');
+const checkProfanity = require('../middleware/profanityFilter');
 const upload = require('../utils/upload');
 const commentAuthorization = require('../middleware/commentAuth');
 const { 
@@ -25,8 +26,8 @@ const { getSystemStats } = require('../controllers/adminController');
 
 router.get('/', cache(300), searchProducts);
 router.get('/:id', objectIdValidation, getProductById);
-router.post('/', protect,upload.array('images', 3), productValidation, addProduct);
-router.post('/:id/comments', protect, objectIdValidation, commentValidation, addComment);
+router.post('/', protect, checkProfanity, upload.array('images', 3), productValidation, addProduct);
+router.post('/:id/comments', protect, checkProfanity, objectIdValidation, commentValidation, addComment);
 router.put(
   '/:id',
   protect,
