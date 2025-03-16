@@ -1,5 +1,6 @@
 const asyncHandler = require('express-async-handler');
 const Product =require('../models/Product.js');
+const User = require('../models/User.js');
 const redisClient = require('../config/redis'); 
 const { deleteFromCloudinary } = require('../utils/upload');
 const { validationResult } = require('express-validator');
@@ -98,6 +99,13 @@ const addProduct = asyncHandler(async (req, res) => {
     addedBy: req.user._id,
     images: imageUrls
   });
+
+  // Update user's uploadedProducts array
+  await User.findByIdAndUpdate(
+    req.user._id,
+    { $push: { uploadedProducts: product._id } },
+    { new: true }
+  );
 
   redisClient.del('vegancodex*', (err) => {
     if (err) console.error('Cache clear error:', err);

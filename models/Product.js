@@ -11,6 +11,12 @@ const commentSchema = new mongoose.Schema({
     required: [true, 'Comment text is required'],
     maxlength: [500, 'Comment cannot exceed 500 characters']
   },
+  rating: {
+    type: Number,
+    required: [true, 'Rating is required'],
+    min: [1, 'Rating must be at least 1'],
+    max: [5, 'Rating cannot exceed 5']
+  },
   createdAt: {
     type: Date,
     default: Date.now
@@ -33,10 +39,10 @@ const productSchema = new mongoose.Schema({
     type: String,
     default: ''
   },
-  ingredients: {
+  ingredients: [{
     type: String,
-    default: ''
-  },
+    trim: true
+  }],
   country: {
     type: String,
     required: true

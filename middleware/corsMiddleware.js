@@ -5,7 +5,7 @@ const ErrorResponse = require('../utils/errorResponse');
 
 const allowedOrigins = [
   process.env.NODE_ENV === 'development' && 'http://localhost:3000', // React web dev
-  process.env.NODE_ENV === 'development' && 'http://localhost:19006', // Expo dev
+  process.env.NODE_ENV === 'development' && 'http://localhost:19006' && 'http://192.168.1.103:19006', // Expo dev
   'https://your-production-app.com', // Production domains
   'https://*.your-production-app.com' // All subdomains
 ].filter(Boolean); // Remove false values

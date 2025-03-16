@@ -40,7 +40,10 @@ const commentValidation = [
     .notEmpty().withMessage('Comment text is required')
     .customSanitizer(sanitizeInput)
     .isLength({ max: 500 }).withMessage('Comment must be less than 500 characters')
-    .escape()
+    .escape(),
+  body('rating')
+    .notEmpty().withMessage('Rating is required')
+    .isInt({ min: 1, max: 5 }).withMessage('Rating must be between 1 and 5')
 ];
 
 const objectIdValidation = [

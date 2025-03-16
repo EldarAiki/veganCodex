@@ -21,6 +21,10 @@ const userSchema = new mongoose.Schema({
     enum: ['user', 'admin', 'moderator'],
     default: 'user'
   },
+  uploadedProducts: [{
+    type: mongoose.Schema.Types.ObjectId,
+    ref: 'Product'
+  }],
   isVerified: {
     type: Boolean,
     default: false
