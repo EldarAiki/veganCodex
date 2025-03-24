@@ -1,6 +1,8 @@
 const createDOMPurify = require('dompurify');
 const { JSDOM } = require('jsdom');
 
+// sanitize incoming data
+
 const window = new JSDOM('').window;
 const DOMPurify = createDOMPurify(window);
 

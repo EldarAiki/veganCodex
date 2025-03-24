@@ -53,6 +53,14 @@ const productSchema = new mongoose.Schema({
     required: true
   },
   comments: [commentSchema],
+  isVeganForCertain: {
+    type: Boolean,
+    default: true
+  },
+  likesCount: {
+    type: Number,
+    default: 0
+  },
   images: [String],
   createdAt: {
     type: Date,

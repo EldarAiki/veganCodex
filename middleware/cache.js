@@ -1,6 +1,6 @@
 const redisClient = require('../config/redis');
 
-const cacheMiddleware = (cacheDuration = 60) => async (req, res, next) => {
+const cacheMiddleware = (cacheDuration = 5) => async (req, res, next) => {
   const cacheKey = `vegancodex:${req.originalUrl}`;
 
   try {

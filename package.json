@@ -8,7 +8,8 @@
     "seed": "node seed.js",
     "test": "cross-env NODE_ENV=development jest --runInBand",
     "test:watch": "npm run test -- --watch",
-    "test:coverage": "npm run test -- --coverage"
+    "test:coverage": "npm run test -- --coverage",
+    "debug": "node --inspect your-server-file.js"
   },
   "jest": {
     "globalTeardown": "./tests/teardown.js"

@@ -78,7 +78,7 @@ const getProductById = asyncHandler(async (req, res) => {
 // @route   POST /api/products
 // @access  Private
 const addProduct = asyncHandler(async (req, res) => {
-  const { name, category, country, description } = req.body;
+  const { name, category, country, isVeganForCertain=false, description } = req.body;
   const imageUrls = req.files?.map(file => file.path) || [];
 
   const errors = validationResult(req);
@@ -95,6 +95,8 @@ const addProduct = asyncHandler(async (req, res) => {
     name,
     category,
     country,
+    isVeganForCertain,
+    likesCount: 0,
     description,
     addedBy: req.user._id,
     images: imageUrls
@@ -124,7 +126,7 @@ const addComment = asyncHandler(async (req, res) => {
     return res.status(400).json({ errors: errors.array() });
   }
   
-  const { text } = req.body;
+  const { text, rating } = req.body;
   
   const product = await Product.findById(req.params.id);
   if (!product) {
@@ -134,7 +136,8 @@ const addComment = asyncHandler(async (req, res) => {
 
   const comment = {
     user: req.user._id,
-    text
+    text,
+    rating
   };
 
   product.comments.push(comment);
@@ -308,7 +311,20 @@ const reportComment = asyncHandler(async (req, res) => {
   });
 });
 
+const getProductByUserId = asyncHandler(async (req, res) => {
+  try {
+    console.log('hey');
+    
+    const products = await Product.find({ addedBy: req.params.userId })
+      .sort({ createdAt: -1 }); 
+    res.json(products);
+  } catch (error) {
+    console.error('Error fetching user products:', error);
+    res.status(500).json({ message: 'Error fetching user products' });
+  }
+});
+
 module.exports = { 
   searchProducts, getProductById,
   addProduct, addComment, updateProduct,
-  deleteProduct, updateComment, deleteComment, reportComment };
+  deleteProduct, updateComment, deleteComment, reportComment, getProductByUserId };
